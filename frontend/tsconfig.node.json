@@ -11,7 +11,8 @@
     "allowImportingTsExtensions": true,
     "isolatedModules": true,
     "moduleDetection": "force",
-    "noEmit": true,
+    "noEmit": false,  // この行を変更
+    "composite": true,  // この行を追加
 
     /* Linting */
     "strict": true,
