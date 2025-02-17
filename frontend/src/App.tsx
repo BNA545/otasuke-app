@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import SearchForm from './components/search/SearchForm';
 import { SearchParams } from './types';
 
