@@ -1,7 +1,7 @@
+import type { SearchParams } from './types';
 import SearchForm from './components/search/SearchForm';
-import { SearchParams } from './types';
 
-function App() {
+export default function App() {
   const handleSearch = (params: SearchParams) => {
     console.log('Search params:', params);
   };
@@ -48,5 +48,3 @@ function App() {
     </div>
   );
 }
-
-export default App;
