@@ -1,14 +1,13 @@
 from fastapi import FastAPI, File, Form, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from typing import List, Optional
+import uuid
 import os
-from dotenv import load_dotenv
-
-load_dotenv()
+from datetime import datetime
 
 app = FastAPI()
 
-# CORSミドルウェアの設定
+# CORSの設定を更新
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
@@ -19,6 +18,7 @@ app.add_middleware(
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
+    expose_headers=["*"]
 )
 
 # アップロード用ディレクトリの作成
@@ -29,7 +29,7 @@ MISSING_PERSONS = [
     {
         "id": "1",
         "title": "東京都渋谷区で行方不明",
-        "description": "2024年2月15日午後3時頃、渋谷駅周辺で最後に目撃されました。黒いコートと青いジーンズを着用していました。",
+        "description": "2024年2月15日午後3時頃、渋谷駅周辺で最後に目撃されました。",
         "name": "山田太郎",
         "age": 25,
         "gender": "male",
@@ -37,24 +37,7 @@ MISSING_PERSONS = [
         "lastSeenDate": "2024-02-15T15:00",
         "photos": [],
         "contactInfo": "渋谷警察署",
-        "createdAt": "2024-02-15T16:00",
-        "hasReward": True,
-        "rewardAmount": 500000
-    },
-    {
-        "id": "2",
-        "title": "大阪市中央区で行方不明",
-        "description": "2024年2月14日午前10時頃、なんば駅付近で最後に目撃されました。赤いバッグを持っていました。",
-        "name": "鈴木花子",
-        "age": 18,
-        "gender": "female",
-        "lastSeenLocation": "大阪市中央区",
-        "lastSeenDate": "2024-02-14T10:00",
-        "photos": [],
-        "contactInfo": "なんば警察署",
-        "createdAt": "2024-02-14T11:00",
-        "hasReward": False,
-        "rewardAmount": None
+        "createdAt": "2024-02-15T16:00"
     }
 ]
 
@@ -65,49 +48,7 @@ async def get_missing_persons(
     age: Optional[str] = None,
     gender: Optional[str] = None
 ):
-    filtered_data = MISSING_PERSONS
-    return filtered_data
-
-    # キーワード検索
-    if keyword:
-        filtered_data = [
-            person for person in filtered_data
-            if keyword.lower() in person["title"].lower() or
-               keyword.lower() in person["description"].lower() or
-               keyword.lower() in person["name"].lower()
-        ]
-
-    # エリア検索
-    if area and area != "":
-        filtered_data = [
-            person for person in filtered_data
-            if area in person["lastSeenLocation"]
-        ]
-
-    # 性別検索
-    if gender and gender != "":
-        filtered_data = [
-            person for person in filtered_data
-            if person["gender"] == gender
-        ]
-
-    # 年齢検索
-    if age and age != "":
-        age_ranges = {
-            "0-12": (0, 12),
-            "13-19": (13, 19),
-            "20-40": (20, 40),
-            "41-64": (41, 64),
-            "65-": (65, 200)
-        }
-        if age in age_ranges:
-            min_age, max_age = age_ranges[age]
-            filtered_data = [
-                person for person in filtered_data
-                if min_age <= person["age"] <= max_age
-            ]
-
-    return filtered_data
+    return MISSING_PERSONS
 
 @app.post("/api/missing-persons")
 async def create_missing_person(
