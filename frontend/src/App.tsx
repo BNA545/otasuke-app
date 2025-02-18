@@ -1,7 +1,8 @@
-import type { SearchParams } from './types';
 import SearchForm from './components/search/SearchForm';
+import type { SearchParams } from './types';
+import type { FC } from 'react';
 
-export default function App() {
+const App: FC = () => {
   const handleSearch = (params: SearchParams) => {
     console.log('Search params:', params);
   };
@@ -47,4 +48,6 @@ export default function App() {
       </footer>
     </div>
   );
-}
+};
+
+export default App;
