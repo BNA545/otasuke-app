@@ -4,32 +4,31 @@ from typing import List, Optional
 import uuid
 import os
 from datetime import datetime
+from dotenv import load_dotenv
+
+load_dotenv()
 
 app = FastAPI()
 
-# CORSの設定を更新
+# CORSの設定
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
+        "http://localhost:5173",
         "https://otasuke-app.vercel.app",
-        "https://otasuke-k4fci445e-bna545s-projects.vercel.app",
-        "http://localhost:5173"
+        "https://otasuke-k4fci445e-bna545s-projects.vercel.app"
     ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
-    expose_headers=["*"]
 )
-
-# アップロード用ディレクトリの作成
-os.makedirs("uploads", exist_ok=True)
 
 # テストデータ
 MISSING_PERSONS = [
     {
         "id": "1",
         "title": "東京都渋谷区で行方不明",
-        "description": "2024年2月15日午後3時頃、渋谷駅周辺で最後に目撃されました。",
+        "description": "2024年2月15日午後3時頃、渋谷駅周辺で最後に目撃されました。黒いコートと青いジーンズを着用していました。",
         "name": "山田太郎",
         "age": 25,
         "gender": "male",
