@@ -1,16 +1,21 @@
 from fastapi import FastAPI, File, Form, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from typing import List, Optional
-import uuid
 import os
-from datetime import datetime, timedelta
+from dotenv import load_dotenv
+
+load_dotenv()
 
 app = FastAPI()
 
 # CORSミドルウェアの設定
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173"],  # Viteのデフォルトポート
+    allow_origins=[
+        "https://otasuke-app.vercel.app",
+        "https://otasuke-k4fci445e-bna545s-projects.vercel.app",
+        "http://localhost:5173"
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -61,6 +66,7 @@ async def get_missing_persons(
     gender: Optional[str] = None
 ):
     filtered_data = MISSING_PERSONS
+    return filtered_data
 
     # キーワード検索
     if keyword:
