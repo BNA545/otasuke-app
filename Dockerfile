@@ -12,6 +12,13 @@ ENV PYTHONUNBUFFERED=1
 # 明示的にポートを設定
 ENV PORT=8000
 
+# PostgreSQLの開発パッケージをインストール
+RUN apt-get update && apt-get install -y \
+    gcc \
+    postgresql-client \
+    libpq-dev \
+    && rm -rf /var/lib/apt/lists/*
+
 # Install pip requirements
 COPY backend/requirements.txt .
 RUN python -m pip install -r requirements.txt
