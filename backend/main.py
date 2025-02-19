@@ -10,17 +10,23 @@ load_dotenv()
 
 app = FastAPI()
 
-# CORSの設定
+# 環境変数からオリジンを取得
+allowed_origins = os.getenv("ALLOWED_ORIGINS", "http://localhost:5173,https://otasuke-app.vercel.app").split(",")
+# 空白を削除
+allowed_origins = [origin.strip() for origin in allowed_origins]
+
+print(f"Allowed origins: {allowed_origins}")
+
+# CORSの設定 - origin設定の変更
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "http://localhost:5173",
-        "https://otasuke-app.vercel.app",
-        "https://otasuke-k4fci445e-bna545s-projects.vercel.app"
-    ],
+    allow_origins=allowed_origins,
+    allow_origin_regex=r"https://.*\.vercel\.app",  # すべてのVercelドメインを許可（オプション）
     allow_credentials=True,
-    allow_methods=["*"],
+    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allow_headers=["*"],
+    expose_headers=["Content-Type", "Authorization"],
+    max_age=600,  # プリフライトリクエストの結果をキャッシュする時間（秒）
 )
 
 # テストデータ
@@ -39,6 +45,15 @@ MISSING_PERSONS = [
         "createdAt": "2024-02-15T16:00"
     }
 ]
+
+# ヘルスチェックエンドポイントの追加
+@app.get("/")
+async def root():
+    return {"status": "ok", "message": "API is running"}
+
+@app.get("/api")
+async def api_root():
+    return {"status": "ok", "message": "API is running", "endpoints": ["/api/missing-persons"]}
 
 @app.get("/api/missing-persons")
 async def get_missing_persons(
@@ -62,8 +77,13 @@ async def create_missing_person(
 ):
     photo_urls = []
     if photos:
+        # アップロードディレクトリの確認
+        uploads_dir = "uploads"
+        if not os.path.exists(uploads_dir):
+            os.makedirs(uploads_dir)
+            
         for photo in photos:
-            file_location = f"uploads/{photo.filename}"
+            file_location = f"{uploads_dir}/{photo.filename}"
             with open(file_location, "wb+") as file_object:
                 content = await photo.read()
                 file_object.write(content)
@@ -85,3 +105,10 @@ async def create_missing_person(
     
     MISSING_PERSONS.append(new_person)
     return new_person
+
+# 起動時のメイン関数
+if __name__ == "__main__":
+    import uvicorn
+    port = int(os.getenv("PORT", "8000"))
+    host = os.getenv("HOST", "0.0.0.0")
+    uvicorn.run("main:app", host=host, port=port, reload=False)
