@@ -109,6 +109,7 @@ async def create_missing_person(
 # 起動時のメイン関数
 if __name__ == "__main__":
     import uvicorn
+    import os
     port = int(os.getenv("PORT", "8000"))
-    host = os.getenv("HOST", "0.0.0.0")
-    uvicorn.run("main:app", host=host, port=port, reload=False)
+    host = "0.0.0.0"
+    uvicorn.run(app, host=host, port=port)
